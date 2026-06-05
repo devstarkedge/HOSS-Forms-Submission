@@ -40,11 +40,23 @@ npm run build
 
 ## 📊 HubSpot Integration
 
-The email subscription form is integrated with the official **HubSpot Forms Submission API (v3)**.
+This project integrates three custom-styled forms directly with the official **HubSpot Forms Submission API (v3)**:
 
+1. **Newsletter Subscription Form**
+   * **Form ID**: `5fa365ba-30ce-4798-a519-499a85469fe9`
+   * **Location**: Homepage Footer (`src/app/page.tsx`)
+
+2. **Sponsorship Deck Request Modal**
+   * **Form ID**: `455dfa10-033e-4f85-8367-c870fc8566fc`
+   * **Location**: Popover Modal (`src/components/SponsorshipModal.tsx`)
+
+3. **Become a Sponsor Request Modal**
+   * **Form ID**: `cf5d5022-c920-4b2e-9c0e-07d974823ae8`
+   * **Location**: Popover Modal (`src/components/BecomeSponsorModal.tsx`)
+
+### General HubSpot Configuration:
 * **Portal ID**: `148257610`
-* **Form ID**: `5fa365ba-30ce-4798-a519-499a85469fe9`
 * **Region**: `eu1` (European data residency endpoint)
 
-For details on the payload format, cookie tracking implementation (`hubspotutk`), and code structure, please read the dedicated documentation:
+For details on the payload formats, cookie tracking implementation (`hubspotutk`), and code structure, please read the dedicated documentation:
 👉 **[HubSpot Integration Guide](./HUBSPOT_INTEGRATION_GUIDE.md)**

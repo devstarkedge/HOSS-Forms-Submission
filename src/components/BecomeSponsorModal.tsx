@@ -69,6 +69,12 @@ export default function BecomeSponsorModal({ isOpen, onClose }: BecomeSponsorMod
 
       const hutk = getCookie("hubspotutk");
 
+      // Split name into first and last name
+      const trimmedName = name.trim();
+      const firstSpaceIndex = trimmedName.indexOf(" ");
+      const firstName = firstSpaceIndex === -1 ? trimmedName : trimmedName.substring(0, firstSpaceIndex);
+      const lastName = firstSpaceIndex === -1 ? "" : trimmedName.substring(firstSpaceIndex + 1).trim();
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -79,7 +85,12 @@ export default function BecomeSponsorModal({ isOpen, onClose }: BecomeSponsorMod
             {
               objectTypeId: "0-1",
               name: "firstname",
-              value: name,
+              value: firstName,
+            },
+            {
+              objectTypeId: "0-1",
+              name: "lastname",
+              value: lastName,
             },
             {
               objectTypeId: "0-1",

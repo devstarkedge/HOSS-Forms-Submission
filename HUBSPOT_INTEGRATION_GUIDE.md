@@ -86,7 +86,12 @@ To link submissions to existing contacts and capture pages viewed by visitors, t
     {
       "objectTypeId": "0-1",
       "name": "firstname",
-      "value": "John Doe"
+      "value": "John"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "lastname",
+      "value": "Doe"
     }
   ],
   "context": {
@@ -104,7 +109,12 @@ To link submissions to existing contacts and capture pages viewed by visitors, t
     {
       "objectTypeId": "0-1",
       "name": "firstname",
-      "value": "John Doe"
+      "value": "John"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "lastname",
+      "value": "Doe"
     },
     {
       "objectTypeId": "0-1",
@@ -172,7 +182,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const region = "eu1";
   const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
 
-  // get cookie and post payload including company and firstname ...
+  // get cookie, split full name into firstname and lastname, and post payload ...
 };
 ```
 
@@ -188,7 +198,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const region = "eu1";
   const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
 
-  // get cookie and post payload including firstname, email, company, and message ...
+  // get cookie, split full name into firstname and lastname, and post payload ...
 };
 ```
 
