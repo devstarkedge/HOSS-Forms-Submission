@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import SponsorshipModal from "@/components/SponsorshipModal";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateEmail = (emailStr: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,8 +84,27 @@ export default function Home() {
   };
 
   return (
-    <main className="hero-section">
-      <div className="hero-bg-shapes">
+    <>
+      <header className="navbar">
+        <div className="container navbar-container">
+          <div className="logo-text">
+            HOSS
+            <span className="logo-dot"></span>
+          </div>
+          <nav className="nav-links">
+            <a href="#" className="nav-link">Menu</a>
+            <button className="nav-cta" style={{ cursor: "pointer", border: "none" }} onClick={() => setIsModalOpen(true)}>
+              Sponsor
+            </button>
+            <a href="#" className="nav-cta" style={{ backgroundColor: "var(--accent)", color: "var(--accent-dark)" }}>
+              Get tickets
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      <main className="hero-section">
+        <div className="hero-bg-shapes">
         <div className="shape-1"></div>
         <div className="shape-2"></div>
       </div>
@@ -221,6 +242,9 @@ export default function Home() {
           </div>
         )}
       </div>
-    </main>
+      </main>
+
+      <SponsorshipModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 }
