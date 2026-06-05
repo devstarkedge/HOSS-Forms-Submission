@@ -1,66 +1,226 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import React, { useState } from "react";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const validateEmail = (emailStr: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(emailStr);
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (!email) {
+      setStatus("error");
+      setErrorMessage("Please enter your email address.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      const portalId = "148257610";
+      const formId = "5fa365ba-30ce-4798-a519-499a85469fe9";
+      const region = "eu1";
+      const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
+
+      // Retrieve HubSpot tracking cookie if available
+      const getCookie = (name: string) => {
+        if (typeof document === "undefined") return undefined;
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(";").shift();
+        return undefined;
+      };
+      
+      const hutk = getCookie("hubspotutk");
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fields: [
+            {
+              objectTypeId: "0-1",
+              name: "email",
+              value: email,
+            },
+          ],
+          context: {
+            pageUri: typeof window !== "undefined" ? window.location.href : "",
+            pageName: typeof window !== "undefined" ? document.title : "",
+            ...(hutk ? { hutk } : {}),
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit to HubSpot");
+      }
+
+      setStatus("success");
+      setEmail("");
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setErrorMessage("Unable to submit. Please check your connection and try again.");
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+    <main className="hero-section">
+      <div className="hero-bg-shapes">
+        <div className="shape-1"></div>
+        <div className="shape-2"></div>
+      </div>
+
+      <div className="hero-content container">
+        {status !== "success" ? (
+          <>
+            <h1 className="hero-heading animate-fade-in">Stay up-to-date</h1>
+            <p className="hero-subheading animate-fade-in delay-1">
+              with Hospitality Social Media Summit
+            </p>
+            <p className="hero-description animate-fade-in delay-2">
+              Be the first to know about speaker reveals, programme updates and
+              ticket releases
+            </p>
+
+            <div className="animate-fade-in delay-3" style={{ width: "100%" }}>
+              <form onSubmit={handleSubscribe} className="subscribe-form-container">
+                <input
+                  type="email"
+                  placeholder="Your e-mail"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status === "error") setStatus("idle");
+                  }}
+                  className="email-input"
+                  disabled={status === "loading"}
+                />
+                <button
+                  type="submit"
+                  className="subscribe-btn"
+                  disabled={status === "loading"}
+                >
+                  {status === "loading" ? (
+                    <>
+                      Submitting
+                      <svg
+                        className="spinner"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          animation: "spin 1s linear infinite",
+                        }}
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeDasharray="32 32"
+                          fill="none"
+                          strokeLinecap="round"
+                        />
+                        <style>{`
+                          @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                          }
+                        `}</style>
+                      </svg>
+                    </>
+                  ) : (
+                    <>
+                      Subscribe
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M1 8H15M15 8L9 2M15 8L9 14"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {status === "error" && (
+                <div className="error-msg">{errorMessage}</div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="success-card">
+            <div className="success-icon-container">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  className="checkmark-circle"
+                  cx="24"
+                  cy="24"
+                  r="22"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                />
+                <path
+                  className="checkmark-check"
+                  d="M15 24.5L21.5 31L33 18"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h2 className="success-title">You're Subscribed!</h2>
+            <p className="success-message">
+              Thank you for subscribing to our updates. We will notify you as soon as
+              speakers are announced, updates are available, or tickets go on sale!
+            </p>
+            <button
+              onClick={() => setStatus("idle")}
+              className="subscribe-btn"
+              style={{ margin: "24px auto 0 auto", fontSize: "0.95rem" }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Back to Form
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
