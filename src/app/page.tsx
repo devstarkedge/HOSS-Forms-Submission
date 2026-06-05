@@ -36,6 +36,17 @@ export default function Home() {
       const region = "eu1";
       const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
 
+      // Retrieve HubSpot tracking cookie if available
+      const getCookie = (name: string) => {
+        if (typeof document === "undefined") return undefined;
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(";").shift();
+        return undefined;
+      };
+      
+      const hutk = getCookie("hubspotutk");
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -49,6 +60,11 @@ export default function Home() {
               value: email,
             },
           ],
+          context: {
+            pageUri: typeof window !== "undefined" ? window.location.href : "",
+            pageName: typeof window !== "undefined" ? document.title : "",
+            ...(hutk ? { hutk } : {}),
+          },
         }),
       });
 

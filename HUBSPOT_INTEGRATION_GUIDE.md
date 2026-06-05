@@ -9,7 +9,7 @@ This documentation explains how the custom subscription form on the Next.js webs
 Instead of using the standard HubSpot script-embedded `<iframe>` form (which overrides branding and limits UI customizations), we utilize the **HubSpot V3 Submissions API**. This allows us to:
 * Keep a premium, custom-styled frontend (pill shape inputs, animations, custom buttons).
 * Submit data directly into HubSpot contacts.
-* Avoid heavy external script embeds.
+* Capture marketing tracking cookies (`hubspotutk`) and page metrics to link form submissions to existing contact records.
 
 ---
 
@@ -31,27 +31,9 @@ POST https://api-eu1.hsforms.com/submissions/v3/integration/submit/148257610/5fa
 
 ---
 
-## 3. Request Payload Options
+## 3. Request Payload Format
 
-The API accepts either a simplified payload (just form fields) or an advanced tracking payload (with cookie tracking and page context). 
-
-### Option A: Simplified Payload (No Cookies / No Page Context)
-If you do not want to deal with tracking cookies or page context, you can submit **only** the form fields. This keeps the implementation extremely lightweight, GDPR-friendly, and simple:
-
-```json
-{
-  "fields": [
-    {
-      "objectTypeId": "0-1",
-      "name": "email",
-      "value": "subscriber@example.com"
-    }
-  ]
-}
-```
-
-### Option B: Advanced Payload (With Cookies & Page Context)
-This structure sends visitor context to HubSpot. It associates page-view history with the contact:
+To link submissions to existing contacts and capture pages viewed by visitors, the API expects a JSON POST body with a `context` object containing the visitor's tracking cookie (`hubspotutk`):
 
 ```json
 {
@@ -70,14 +52,21 @@ This structure sends visitor context to HubSpot. It associates page-view history
 }
 ```
 
+### Key Parameters:
+1. **`fields`**: An array mapping inputs to contact fields in HubSpot.
+   * `objectTypeId`: `"0-1"` designates the HubSpot "Contact" schema.
+   * `name`: Target contact property (`email`).
+   * `value`: The actual string content submitted.
+2. **`context`**: Meta-data parameters used for channel/lead source analytics:
+   * `pageUri`: Page URL where the form submission happened.
+   * `pageName`: Document title of the submission page.
+   * `hutk`: The HubSpot User Tracking cookie value (`hubspotutk`), which links page-view history to this contact.
+
 ---
 
 ## 4. Code Implementation Detail
 
-Depending on your preference, you can implement the API fetch request in two ways.
-
-### Method 1: Simplified Implementation (Recommended for simplicity)
-This version removes all cookie lookups and context fields, posting only the email parameter:
+The form submission handler is implemented inside `src/app/page.tsx` as follows:
 
 ```typescript
 const handleSubscribe = async (e: React.FormEvent) => {
@@ -90,6 +79,18 @@ const handleSubscribe = async (e: React.FormEvent) => {
     const region = "eu1";
     const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
 
+    // Helper to retrieve the HubSpot tracking cookie (hubspotutk) from the browser
+    const getCookie = (name: string) => {
+      if (typeof document === "undefined") return undefined;
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return undefined;
+    };
+    
+    const hutk = getCookie("hubspotutk");
+
+    // Submit data via POST request
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -103,64 +104,10 @@ const handleSubscribe = async (e: React.FormEvent) => {
             value: email, // state variable containing user email
           },
         ],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to submit to HubSpot");
-    }
-
-    setStatus("success");
-    setEmail("");
-  } catch (err) {
-    console.error(err);
-    setStatus("error");
-  }
-};
-```
-
-### Method 2: Full Integration (With Cookie Tracking)
-Use this version if your client requires active user session tracking or page analytics inside HubSpot:
-
-```typescript
-const handleSubscribe = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setStatus("loading");
-
-  try {
-    const portalId = "148257610";
-    const formId = "5fa365ba-30ce-4798-a519-499a85469fe9";
-    const region = "eu1";
-    const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
-
-    // Helper to extract HubSpot tracking cookie
-    const getCookie = (name: string) => {
-      if (typeof document === "undefined") return undefined;
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift();
-      return undefined;
-    };
-    
-    const hutk = getCookie("hubspotutk");
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fields: [
-          {
-            objectTypeId: "0-1",
-            name: "email",
-            value: email,
-          },
-        ],
         context: {
           pageUri: typeof window !== "undefined" ? window.location.href : "",
           pageName: typeof window !== "undefined" ? document.title : "",
-          ...(hutk ? { hutk } : {}),
+          ...(hutk ? { hutk } : {}), // Sends the tracking cookie context if present
         },
       }),
     });
@@ -183,4 +130,4 @@ const handleSubscribe = async (e: React.FormEvent) => {
 ## 5. Summary of Benefits
 * **Complete Design Freedom**: The developer maintains full control over CSS variables, form layouts, error messages, and loading transitions.
 * **Optimized Performance**: Replaces heavier HubSpot script embeds with a single native AJAX/Fetch request.
-* **GDPR Compliance Option**: By opting for Method 1, you do not extract or track client cookies, reducing data privacy compliance complexity.
+* **Tracking Integrity**: By supplying the `context` object and tracking cookie (`hutk`), HubSpot correctly links form submissions to existing contacts and logs visitor page history.
