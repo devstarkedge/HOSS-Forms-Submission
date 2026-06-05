@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import SponsorshipModal from "@/components/SponsorshipModal";
+import BecomeSponsorModal from "@/components/BecomeSponsorModal";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBecomeSponsorOpen, setIsBecomeSponsorOpen] = useState(false);
 
   const validateEmail = (emailStr: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,11 +94,13 @@ export default function Home() {
             <span className="logo-dot"></span>
           </div>
           <nav className="nav-links">
-            <a href="#" className="nav-link">Menu</a>
+            <button className="nav-link" style={{ cursor: "pointer", border: "none", background: "none" }} onClick={() => setIsBecomeSponsorOpen(true)}>
+              Become a Sponsor
+            </button>
             <button className="nav-cta" style={{ cursor: "pointer", border: "none" }} onClick={() => setIsModalOpen(true)}>
               Sponsor
             </button>
-            <a href="#" className="nav-cta" style={{ backgroundColor: "var(--accent)", color: "var(--accent-dark)" }}>
+            <a href="#" className="nav-cta" style={{ backgroundColor: "var(--accent)", color: "var(--accent-dark)", textDecoration: "none" }}>
               Get tickets
             </a>
           </nav>
@@ -245,6 +249,7 @@ export default function Home() {
       </main>
 
       <SponsorshipModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BecomeSponsorModal isOpen={isBecomeSponsorOpen} onClose={() => setIsBecomeSponsorOpen(false)} />
     </>
   );
 }
