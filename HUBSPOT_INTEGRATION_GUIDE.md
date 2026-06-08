@@ -28,6 +28,7 @@ These are the credentials and region configurations currently configured for you
 | **Newsletter Subscription** | `5fa365ba-30ce-4798-a519-499a85469fe9` | `email` | `src/app/page.tsx` |
 | **Sponsorship Deck Request** | `455dfa10-033e-4f85-8367-c870fc8566fc` | `email`, `company`, `firstname` | `src/components/SponsorshipModal.tsx` |
 | **Become a Sponsor** | `cf5d5022-c920-4b2e-9c0e-07d974823ae8` | `firstname`, `email`, `company`, `message` | `src/components/BecomeSponsorModal.tsx` |
+| **Contact Form** | `1369024b-f128-4722-b54a-c388fecb2b8c` | `firstname`, `lastname`, `email`, `company`, `im_getting_in_touch_about`, `message` | `src/components/ContactModal.tsx` |
 
 ### API Endpoint URLs
 Due to European data privacy residency regulations (`eu1` region), submissions must be routed to the EU1 API domain:
@@ -43,6 +44,10 @@ Due to European data privacy residency regulations (`eu1` region), submissions m
 * **Become a Sponsor Endpoint**:
   ```http
   POST https://api-eu1.hsforms.com/submissions/v3/integration/submit/148257610/cf5d5022-c920-4b2e-9c0e-07d974823ae8
+  ```
+* **Contact Form Endpoint**:
+  ```http
+  POST https://api-eu1.hsforms.com/submissions/v3/integration/submit/148257610/1369024b-f128-4722-b54a-c388fecb2b8c
   ```
 
 ---
@@ -138,6 +143,50 @@ To link submissions to existing contacts and capture pages viewed by visitors, t
     "hutk": "xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   }
 }
+
+### 3.4 Contact Form Payload
+```json
+{
+  "fields": [
+    {
+      "objectTypeId": "0-1",
+      "name": "firstname",
+      "value": "John"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "lastname",
+      "value": "Doe"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "email",
+      "value": "john@example.com"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "company",
+      "value": "Example Corp"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "im_getting_in_touch_about",
+      "value": "Tickets & group bookings"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "message",
+      "value": "I have a question about the ticketing process."
+    }
+  ],
+  "context": {
+    "pageUri": "https://yoursite.com/",
+    "pageName": "HOSS Summit | Stay Up-to-Date",
+    "hutk": "xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "ipAddress": "192.168.1.1"
+  }
+}
+```
 ```
 
 ### Key Parameters:
@@ -200,6 +249,22 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   // get cookie, split full name into firstname and lastname, and post payload ...
 };
+
+### 4.4 Contact Form (ContactModal.tsx)
+The contact form submission handler is located inside `src/components/ContactModal.tsx`:
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setStatus("loading");
+  // ... validation ...
+  const portalId = "148257610";
+  const formId = "1369024b-f128-4722-b54a-c388fecb2b8c";
+  const region = "eu1";
+  const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
+
+  // get cookie, split full name into firstname and lastname, and post payload ...
+};
+```
 ```
 
 ---
@@ -208,3 +273,57 @@ const handleSubmit = async (e: React.FormEvent) => {
 * **Complete Design Freedom**: The developer maintains full control over CSS variables, form layouts, error messages, and loading transitions.
 * **Optimized Performance**: Replaces heavier HubSpot script embeds with standard native AJAX/Fetch requests.
 * **Tracking Integrity**: By supplying the `context` object and tracking cookie (`hutk`), HubSpot correctly links form submissions to existing contacts and logs visitor page history.
+
+---
+
+## 6. Standard HubSpot Embed Scripts (For Reference)
+
+If you ever need to reference or use the standard HubSpot-embedded iframe scripts instead of the custom AJAX API implementation, here are the configurations for all four forms:
+
+### 6.1 Newsletter Subscription Form
+```html
+<script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "148257610",
+    formId: "5fa365ba-30ce-4798-a519-499a85469fe9",
+    region: "eu1"
+  });
+</script>
+```
+
+### 6.2 Sponsorship Deck Request Form
+```html
+<script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "148257610",
+    formId: "455dfa10-033e-4f85-8367-c870fc8566fc",
+    region: "eu1"
+  });
+</script>
+```
+
+### 6.3 Become a Sponsor Form
+```html
+<script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "148257610",
+    formId: "cf5d5022-c920-4b2e-9c0e-07d974823ae8",
+    region: "eu1"
+  });
+</script>
+
+### 6.4 Contact Form
+```html
+<script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "148257610",
+    formId: "1369024b-f128-4722-b54a-c388fecb2b8c",
+    region: "eu1"
+  });
+</script>
+```
+```

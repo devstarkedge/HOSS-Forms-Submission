@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import SponsorshipModal from "@/components/SponsorshipModal";
 import BecomeSponsorModal from "@/components/BecomeSponsorModal";
+import ContactModal from "@/components/ContactModal";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBecomeSponsorOpen, setIsBecomeSponsorOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const validateEmail = (emailStr: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -96,6 +98,9 @@ export default function Home() {
           <nav className="nav-links">
             <button className="nav-link" style={{ cursor: "pointer", border: "none", background: "none" }} onClick={() => setIsBecomeSponsorOpen(true)}>
               Become a Sponsor
+            </button>
+            <button className="nav-link" style={{ cursor: "pointer", border: "none", background: "none" }} onClick={() => setIsContactOpen(true)}>
+              Contact
             </button>
             <button className="nav-cta" style={{ cursor: "pointer", border: "none" }} onClick={() => setIsModalOpen(true)}>
               Sponsor
@@ -250,6 +255,7 @@ export default function Home() {
 
       <SponsorshipModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <BecomeSponsorModal isOpen={isBecomeSponsorOpen} onClose={() => setIsBecomeSponsorOpen(false)} />
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </>
   );
 }
