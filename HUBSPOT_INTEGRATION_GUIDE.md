@@ -29,6 +29,7 @@ These are the credentials and region configurations currently configured for you
 | **Sponsorship Deck Request** | `455dfa10-033e-4f85-8367-c870fc8566fc` | `email`, `company`, `firstname` | `src/components/SponsorshipModal.tsx` |
 | **Become a Sponsor** | `cf5d5022-c920-4b2e-9c0e-07d974823ae8` | `firstname`, `email`, `company`, `message` | `src/components/BecomeSponsorModal.tsx` |
 | **Contact Form** | `1369024b-f128-4722-b54a-c388fecb2b8c` | `firstname`, `lastname`, `email`, `company`, `im_getting_in_touch_about`, `message` | `src/components/ContactModal.tsx` |
+| **Cities Notification** | `4b316979-6a89-44cf-a14a-a260c172ebd9` | `email`, `explore_other_cities` | `src/components/CityNotificationModal.tsx` |
 
 ### API Endpoint URLs
 Due to European data privacy residency regulations (`eu1` region), submissions must be routed to the EU1 API domain:
@@ -48,6 +49,10 @@ Due to European data privacy residency regulations (`eu1` region), submissions m
 * **Contact Form Endpoint**:
   ```http
   POST https://api-eu1.hsforms.com/submissions/v3/integration/submit/148257610/1369024b-f128-4722-b54a-c388fecb2b8c
+  ```
+* **Cities Notification Endpoint**:
+  ```http
+  POST https://api-eu1.hsforms.com/submissions/v3/integration/submit/148257610/4b316979-6a89-44cf-a14a-a260c172ebd9
   ```
 
 ---
@@ -187,6 +192,27 @@ To link submissions to existing contacts and capture pages viewed by visitors, t
   }
 }
 ```
+### 3.5 Cities Notification Payload
+```json
+{
+  "fields": [
+    {
+      "objectTypeId": "0-1",
+      "name": "email",
+      "value": "subscriber@example.com"
+    },
+    {
+      "objectTypeId": "0-1",
+      "name": "explore_other_cities",
+      "value": "Barcelona"
+    }
+  ],
+  "context": {
+    "pageUri": "https://yoursite.com/",
+    "pageName": "HOSS Summit | Stay Up-to-Date",
+    "hutk": "xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  }
+}
 ```
 
 ### Key Parameters:
@@ -265,6 +291,23 @@ const handleSubmit = async (e: React.FormEvent) => {
   // get cookie, split full name into firstname and lastname, and post payload ...
 };
 ```
+
+### 4.5 Cities Notification Form (CityNotificationModal.tsx)
+The city notification form submission handler is located inside `src/components/CityNotificationModal.tsx`:
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setStatus("loading");
+  // ... validation ...
+  const portalId = "148257610";
+  const formId = "4b316979-6a89-44cf-a14a-a260c172ebd9";
+  const region = "eu1";
+  const endpoint = `https://api-${region}.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
+
+  // get cookie, activeCity, and post payload ...
+};
+```
+```
 ```
 
 ---
@@ -322,6 +365,18 @@ If you ever need to reference or use the standard HubSpot-embedded iframe script
   hbspt.forms.create({
     portalId: "148257610",
     formId: "1369024b-f128-4722-b54a-c388fecb2b8c",
+    region: "eu1"
+  });
+</script>
+```
+
+### 6.5 Cities Notification Form
+```html
+<script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "148257610",
+    formId: "4b316979-6a89-44cf-a14a-a260c172ebd9",
     region: "eu1"
   });
 </script>

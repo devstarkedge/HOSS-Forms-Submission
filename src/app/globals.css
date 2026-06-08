@@ -869,4 +869,104 @@ body {
   transform: translateX(4px);
 }
 
+/* Explore Cities Section */
+.cities-section {
+  padding: 100px 0;
+  text-align: center;
+  background-color: var(--background);
+}
+
+.cities-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--foreground);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.cities-subheading {
+  font-family: var(--font-sans);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: var(--text-muted);
+  max-width: 580px;
+  margin: 0 auto 48px auto;
+  line-height: 1.5;
+}
+
+.cities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.city-card {
+  background-color: #f3f6ee; /* Soft off-white, slightly lighter than page background #edf1e9 */
+  border-radius: 20px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  border: 1px solid rgba(12, 36, 23, 0.02);
+}
+
+.city-card:hover {
+  background-color: var(--accent); /* Lime green on hover */
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.city-name {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--foreground);
+}
+
+.city-btn {
+  background-color: var(--foreground);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.city-btn svg {
+  color: var(--accent);
+  transition: var(--transition-smooth);
+}
+
+.city-card:hover .city-btn {
+  background-color: var(--foreground);
+  color: #ffffff;
+}
+
+.city-btn:hover {
+  transform: scale(1.02);
+}
+
+.city-btn:active {
+  transform: scale(0.98);
+}
+
+.city-card:hover .city-btn svg {
+  transform: translateX(4px);
+}
+
+
 

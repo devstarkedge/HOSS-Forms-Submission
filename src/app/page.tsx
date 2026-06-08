@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import SponsorshipModal from "@/components/SponsorshipModal";
 import BecomeSponsorModal from "@/components/BecomeSponsorModal";
 import ContactModal from "@/components/ContactModal";
+import CityNotificationModal from "@/components/CityNotificationModal";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,8 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBecomeSponsorOpen, setIsBecomeSponsorOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isCityModalOpen, setIsCityModalOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
 
   const validateEmail = (emailStr: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -102,12 +105,12 @@ export default function Home() {
             <button className="nav-link" style={{ cursor: "pointer", border: "none", background: "none" }} onClick={() => setIsContactOpen(true)}>
               Contact
             </button>
+            <button className="nav-link" style={{ cursor: "pointer", border: "none", background: "none" }} onClick={() => { setSelectedCity(""); setIsCityModalOpen(true); }}>
+              Cities
+            </button>
             <button className="nav-cta" style={{ cursor: "pointer", border: "none" }} onClick={() => setIsModalOpen(true)}>
               Sponsor
             </button>
-            <a href="#" className="nav-cta" style={{ backgroundColor: "var(--accent)", color: "var(--accent-dark)", textDecoration: "none" }}>
-              Get tickets
-            </a>
           </nav>
         </div>
       </header>
@@ -256,6 +259,11 @@ export default function Home() {
       <SponsorshipModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <BecomeSponsorModal isOpen={isBecomeSponsorOpen} onClose={() => setIsBecomeSponsorOpen(false)} />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+      <CityNotificationModal
+        isOpen={isCityModalOpen}
+        onClose={() => setIsCityModalOpen(false)}
+        city={selectedCity}
+      />
     </>
   );
 }
