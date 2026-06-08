@@ -38,9 +38,7 @@ npm run build
 
 ---
 
-## 📊 HubSpot Integration
-
-This project integrates four custom-styled forms directly with the official **HubSpot Forms Submission API (v3)**:
+This project integrates five custom-styled forms directly with the official **HubSpot Forms Submission API (v3)**:
 
 1. **Newsletter Subscription Form**
    * **Form ID**: `5fa365ba-30ce-4798-a519-499a85469fe9`
@@ -57,6 +55,10 @@ This project integrates four custom-styled forms directly with the official **Hu
 4. **Contact Request Modal**
    * **Form ID**: `1369024b-f128-4722-b54a-c388fecb2b8c`
    * **Location**: Popover Modal (`src/components/ContactModal.tsx`)
+
+5. **Cities Notification Request Modal**
+   * **Form ID**: `4b316979-6a89-44cf-a14a-a260c172ebd9`
+   * **Location**: Popover Modal (`src/components/CityNotificationModal.tsx`)
 
 ### General HubSpot Configuration:
 * **Portal ID**: `148257610`

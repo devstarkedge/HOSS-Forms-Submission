@@ -307,8 +307,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   // get cookie, activeCity, and post payload ...
 };
 ```
-```
-```
 
 ---
 
